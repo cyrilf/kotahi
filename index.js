@@ -28,13 +28,12 @@ function getRandomNumber(min, max) {
 }
 
 function handleMessage(senderId, text) {
-    const isNewPlayer = !!players[senderId];
-    const isNewGame = players[senderId].number;
+    const isNewPlayer = !players[senderId];
     let answer = '';
 
-    if (isNewPlayer || isNewGame) {
+    if (isNewPlayer) {
         const number = getRandomNumber(1, 100);
-        players[senderId] = { game: 'moreOrLess', try: 0, number };
+        players[senderId] = { game: 'moreOrLess', try: 0, number: number };
         answer = 'I\'ve pick a random number between 1 and 100. Find it!';
     } else {
         const numberToGuess = players[senderId].number;
@@ -50,8 +49,7 @@ function handleMessage(senderId, text) {
         if (guessValid) {
             if (guessWin) {
                 answer = 'Awesome! You found it after ' + guessTry + 'retry. I\'ve already picked another one, find it! Haha';
-                players[senderId].try = 0;
-                delete players[senderId].number;
+                delete players[senderId];
             } else if(guessUnder) {
                 answer = 'It\'s more!';
             } else if(guessOver) {
@@ -65,7 +63,7 @@ function handleMessage(senderId, text) {
 
 function sendTextMessage(sender, text) {
   const messageData = {
-    text,
+    text: text,
 };
 
   request({
@@ -93,7 +91,6 @@ app.post('/webhook/', (req, res) => {
     if (event.message && event.message.text) {
       let text = event.message.text;
       handleMessage(sender, text);
-      sendTextMessage(sender, 'Text received, echo: ' + text.substring(0, 200));
     }
   }
 
