@@ -24,7 +24,7 @@ app.get('/webhook/', (req, res) => {
 let players = [];
 
 function getRandomNumber(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
+    return Math.floor(Math.random() * (max - min)) + min;
 }
 
 function handleMessage(senderId, text) {
@@ -33,7 +33,7 @@ function handleMessage(senderId, text) {
 
     if (isNewPlayer) {
         const number = getRandomNumber(1, 100);
-        players[senderId] = { game: 'moreOrLess', try: 0, number: number };
+        players[senderId] = { game: 'moreOrLess', try: 1, number: number };
         answer = 'I\'ve pick a random number between 1 and 100. Find it!';
     } else {
         const numberToGuess = players[senderId].number;
@@ -48,12 +48,16 @@ function handleMessage(senderId, text) {
 
         if (guessValid) {
             if (guessWin) {
-                answer = 'Awesome! You found it after ' + guessTry + 'retry. I\'ve already picked another one, find it! Haha';
+                answer = 'Awesome! You found it after ' + guessTry + ' try. I\'ve already picked another one, find it! Haha';
                 delete players[senderId];
-            } else if(guessUnder) {
-                answer = 'It\'s more!';
-            } else if(guessOver) {
-                answer = 'It\'s less!';
+            } else {
+                if(guessUnder) {
+                    answer = 'It\'s more!';
+                } else if(guessOver) {
+                    answer = 'It\'s less!';
+                }
+
+                players[senderId].try += 1;
             }
         }
     }
