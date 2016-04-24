@@ -4,6 +4,7 @@ let express = require('express');
 let app = express();
 
 app.set('port', (process.env.PORT || 2377));
+const token = 'CAABflhqiHg8BAMwCf5nJ6cV7gfjN9UB3IjBpk581PGJrfsc7rOTmy68knpS51ASelgEyOIMxoyEKIZCWZCigz8qU7Rwkz7pKxQSWLJjei1CSl5KD8Prngcmst0Hd1PzU9mUgFpTBfEjlt2zbgGxWmXDTqZAaRNXNXiF8dsyfTNVF6cxEC13YmvZBjmQHXtJmYp3b9OWZABwZDZD';
 
 app.get('/', (req, res) => {
   res.send("I'm Kotahi, let's play!");
@@ -17,6 +18,28 @@ app.get('/webhook/', (req, res) => {
   res.send('You tried, you failed.');
 });
 
+function sendTextMessage(sender, text) {
+  messageData = {
+    text,
+  }
+
+  request({
+    url: 'https://graph.facebook.com/v2.6/me/messages',
+    qs: { access_token: token },
+    method: 'POST',
+    json: {
+      recipient: { id: sender },
+      message: messageData,
+    }
+}, (error, response, body) => {
+    if (error) {
+      console.log('Error sending message: ', error);
+    } else if (response.body.error) {
+      console.log('Error: ', response.body.error);
+    }
+  });
+}
+
 app.post('/webhook/', (req, res) => {
   messaging_events = req.body.entry[0].messaging;
   for (i = 0; i < messaging_events.length; i++) {
@@ -24,9 +47,10 @@ app.post('/webhook/', (req, res) => {
     sender = event.sender.id;
     if (event.message && event.message.text) {
       text = event.message.text;
-      // Handle a text message from this sender
+      sendTextMessage(sender, 'Text received, echo: ' + text.substring(0, 200));
     }
   }
+
   res.sendStatus(200);
 });
 
