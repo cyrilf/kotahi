@@ -5,7 +5,6 @@ let bodyParser = require('body-parser');
 let request = require('request');
 let app = express();
 
-const token = 'CAABflhqiHg8BAMwCf5nJ6cV7gfjN9UB3IjBpk581PGJrfsc7rOTmy68knpS51ASelgEyOIMxoyEKIZCWZCigz8qU7Rwkz7pKxQSWLJjei1CSl5KD8Prngcmst0Hd1PzU9mUgFpTBfEjlt2zbgGxWmXDTqZAaRNXNXiF8dsyfTNVF6cxEC13YmvZBjmQHXtJmYp3b9OWZABwZDZD';
 app.set('port', (process.env.PORT || 2377));
 app.use(bodyParser.json());
 
@@ -14,7 +13,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/webhook/', (req, res) => {
-    if (req.query['hub.verify_token'] === 'moemoea_NZ') {
+    if (req.query['hub.verify_token'] === process.env.FACEBOOK_VERIFY_TOKEN) {
         res.send(req.query['hub.challenge']);
     }
 
@@ -48,7 +47,7 @@ function handleMessage(senderId, text) {
 
         if (guessValid) {
             if (guessWin) {
-                answer = 'Awesome! You found it after ' + guessTry + ' try. I\'ve already picked another one, find it! Haha';
+                answer = 'Awesome! You found it after ' + guessTry + ' try.';
                 delete players[senderId];
             } else {
                 if(guessUnder) {
@@ -72,7 +71,7 @@ function sendTextMessage(sender, text) {
 
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: { access_token: token },
+        qs: { access_token: process.env.FACEBOOK_ACCESS_TOKEN },
         method: 'POST',
         json: {
             recipient: { id: sender },
