@@ -1,0 +1,29 @@
+{
+  "name": "kotahi",
+  "version": "1.0.0",
+  "description": "Messenger game bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyrilf/kotahi.git"
+  },
+  "keywords": [
+    "facebook",
+    "messenger",
+    "game",
+    "bot"
+  ],
+  "author": "Cyril F",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cyrilf/kotahi/issues"
+  },
+  "homepage": "https://github.com/cyrilf/kotahi#readme",
+  "dependencies": {
+    "express": "^4.13.4"
+  }
+}
