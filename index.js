@@ -44,11 +44,11 @@ function sendTextMessage(sender, text) {
 
 app.post('/webhook/', (req, res) => {
   const messaging_events = req.body.entry[0].messaging;
-  for (i = 0; i < messaging_events.length; i++) {
-    event = req.body.entry[0].messaging[i];
-    sender = event.sender.id;
+  for (let i = 0; i < messaging_events.length; i++) {
+    const event = req.body.entry[0].messaging[i];
+    const sender = event.sender.id;
     if (event.message && event.message.text) {
-      text = event.message.text;
+      let text = event.message.text;
       sendTextMessage(sender, 'Text received, echo: ' + text.substring(0, 200));
     }
   }
