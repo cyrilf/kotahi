@@ -1,10 +1,12 @@
 'use strict';
 
 let express = require('express');
+let bodyParser = require('body-parser');
 let app = express();
 
-app.set('port', (process.env.PORT || 2377));
 const token = 'CAABflhqiHg8BAMwCf5nJ6cV7gfjN9UB3IjBpk581PGJrfsc7rOTmy68knpS51ASelgEyOIMxoyEKIZCWZCigz8qU7Rwkz7pKxQSWLJjei1CSl5KD8Prngcmst0Hd1PzU9mUgFpTBfEjlt2zbgGxWmXDTqZAaRNXNXiF8dsyfTNVF6cxEC13YmvZBjmQHXtJmYp3b9OWZABwZDZD';
+app.set('port', (process.env.PORT || 2377));
+app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
   res.send("I'm Kotahi, let's play!");
@@ -19,7 +21,7 @@ app.get('/webhook/', (req, res) => {
 });
 
 function sendTextMessage(sender, text) {
-  messageData = {
+  const messageData = {
     text,
   }
 
@@ -41,7 +43,7 @@ function sendTextMessage(sender, text) {
 }
 
 app.post('/webhook/', (req, res) => {
-  messaging_events = req.body.entry[0].messaging;
+  const messaging_events = req.body.entry[0].messaging;
   for (i = 0; i < messaging_events.length; i++) {
     event = req.body.entry[0].messaging[i];
     sender = event.sender.id;
