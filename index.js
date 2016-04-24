@@ -21,10 +21,52 @@ app.get('/webhook/', (req, res) => {
   res.send('You tried, you failed.');
 });
 
+let players = [];
+
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function handleMessage(senderId, text) {
+    const isNewPlayer = !!players[senderId];
+    const isNewGame = players[senderId].number;
+    let answer = '';
+
+    if (isNewPlayer || isNewGame) {
+        const number = getRandomNumber(1, 100);
+        players[senderId] = { game: 'moreOrLess', try: 0, number };
+        answer = 'I\'ve pick a random number between 1 and 100. Find it!';
+    } else {
+        const numberToGuess = players[senderId].number;
+        const guessTry = players[senderId].try;
+        const guess = parseInt(text);
+        const guessValid = guess && guess > 0 && guess <= 100;
+        const guessWin = guess === numberToGuess;
+        const guessUnder = guess < numberToGuess;
+        const guessOver = guess > numberToGuess;
+
+        answer = 'I dont\'t get it.. Please enter a valid number';
+
+        if (guessValid) {
+            if (guessWin) {
+                answer = 'Awesome! You found it after ' + guessTry + 'retry. I\'ve already picked another one, find it! Haha';
+                players[senderId].try = 0;
+                delete players[senderId].number;
+            } else if(guessUnder) {
+                answer = 'It\'s more!';
+            } else if(guessOver) {
+                answer = 'It\'s less!';
+            }
+        }
+    }
+
+    sendTextMessage(senderId, answer);
+}
+
 function sendTextMessage(sender, text) {
   const messageData = {
     text,
-  }
+};
 
   request({
     url: 'https://graph.facebook.com/v2.6/me/messages',
@@ -50,6 +92,7 @@ app.post('/webhook/', (req, res) => {
     const sender = event.sender.id;
     if (event.message && event.message.text) {
       let text = event.message.text;
+      handleMessage(sender, text);
       sendTextMessage(sender, 'Text received, echo: ' + text.substring(0, 200));
     }
   }
